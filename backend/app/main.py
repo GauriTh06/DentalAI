@@ -9,10 +9,10 @@ from backend.app.routes import auth, predict, patient, admin, chat
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Connect to MongoDB on startup
+    # Connect to PostgreSQL on startup
     await connect_to_mongo()
     yield
-    # Close MongoDB connection on shutdown
+    # Close connection on shutdown
     await close_mongo_connection()
 
 app = FastAPI(
@@ -22,11 +22,14 @@ app = FastAPI(
 )
 
 # CORS Policy Configuration
-# Allow local development connections (Vite default is http://localhost:5173)
+# FIX: allow_credentials=True is INCOMPATIBLE with allow_origins=["*"].
+# Browsers block preflight (OPTIONS) requests when both are set, causing
+# "Failed to fetch" on every cross-origin request.
+# Since we use Bearer tokens (not cookies), credentials mode is not needed.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["*"],        # Open to all origins
+    allow_credentials=False,    # Must be False when allow_origins=["*"]
     allow_methods=["*"],
     allow_headers=["*"],
 )

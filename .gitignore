@@ -15,6 +15,7 @@ env/
 # Datasets and Uploads
 datasets/
 uploads/
+*.h5
 
 # IDE
 .vscode/
