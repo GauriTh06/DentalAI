@@ -1,7 +1,8 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from backend.app.config import settings
 from backend.app.database import connect_to_mongo, close_mongo_connection
@@ -21,21 +22,28 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Policy Configuration
-# FIX: allow_credentials=True is INCOMPATIBLE with allow_origins=["*"].
-# Browsers block preflight (OPTIONS) requests when both are set, causing
-# "Failed to fetch" on every cross-origin request.
-# Since we use Bearer tokens (not cookies), credentials mode is not needed.
+# ──────────────────────────────────────────────────────────────────────────────
+# CORS — allow_credentials MUST be False when allow_origins=["*"].
+# Using True + * is invalid per the CORS spec and causes Starlette to crash
+# OR browsers to block every response with "No Access-Control-Allow-Origin".
+# We use Bearer tokens in headers (not cookies) so credentials=False is fine.
+# ──────────────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],        # Open to all origins
-    allow_credentials=False,    # Must be False when allow_origins=["*"]
-    allow_methods=["*"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
-# Mount static uploads directory to serve uploaded diagnostic scans
-app.mount("/uploads", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="uploads")
+# Mount static uploads directory — guard against missing dir on fresh containers
+try:
+    settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="uploads")
+except Exception as e:
+    import logging
+    logging.getLogger("dentalai").warning(f"Could not mount /uploads static dir: {e}")
 
 # Mount Routers under the /api prefix
 app.include_router(auth.router, prefix="/api")
