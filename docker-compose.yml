@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Database Service
+  mongodb:
+    image: mongo:latest
+    container_name: dentalai_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - dentalai_network
+    restart: always
+
+  # 2. FastAPI Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dentalai_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - DATABASE_NAME=dentalai_pro
+      - JWT_SECRET=super_secret_dentalai_pro_key_1234567890
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+      - ./backend/models:/app/backend/models
+    depends_on:
+      - mongodb
+    networks:
+      - dentalai_network
+    restart: always
+
+  # 3. Nginx React Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dentalai_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - dentalai_network
+    restart: always
+
+volumes:
+  mongodb_data:
+
+networks:
+  dentalai_network:
+    driver: bridge

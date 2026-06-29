@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+dist/
+build/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Datasets and Uploads
+datasets/
+uploads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS generated
+.DS_Store
+Thumbs.db

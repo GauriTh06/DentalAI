@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-medical-50: #f0fdfa;
+  --color-medical-100: #ccfbf1;
+  --color-medical-200: #99f6e4;
+  --color-medical-500: #14b8a6;
+  --color-medical-600: #0d9488;
+  --color-medical-700: #0f766e;
+  --color-medical-800: #115e59;
+  --color-medical-900: #134e4a;
+  
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+
+  --color-navy-50: #f8fafc;
+  --color-navy-100: #f1f5f9;
+  --color-navy-800: #1e293b;
+  --color-navy-900: #0f172a;
+  --color-navy-950: #020617;
+}
+
+body {
+  @apply bg-navy-950 text-slate-100 font-sans antialiased selection:bg-medical-500 selection:text-white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: rgba(30, 41, 59, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(15, 118, 110, 0.1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-navy-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
+}
+
+/* Pulse Glow Animation */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(20, 184, 166, 0.8);
+  }
+}
+
+.glow-btn {
+  animation: glow 3s infinite;
+}
