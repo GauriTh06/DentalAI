@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || 'https://dental-ai-backend-55pq.onrender.com/api';
 
 // Helper to get auth headers
 const getAuthHeaders = (): Record<string, string> => {
