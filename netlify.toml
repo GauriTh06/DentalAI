@@ -4,6 +4,7 @@
   command = "npm install && npm run build"
 
 [build.environment]
+  NODE_VERSION = "20"
   VITE_API_URL = "https://dental-ai-backend-55pq.onrender.com/api"
 
 [[redirects]]

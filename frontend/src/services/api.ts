@@ -1,11 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// api.ts — Hybrid API layer
-//  • When VITE_API_URL is set → hits the real backend (production)
-//  • Otherwise → uses a fully self-contained localStorage mock (local dev / demo)
+// api.ts — Self-contained localStorage auth (no backend required)
+//  Set USE_MOCK = false and BACKEND_URL to your API to use a real backend.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BACKEND_URL = import.meta.env.VITE_API_URL as string | undefined;
-const USE_MOCK = !BACKEND_URL;
+const BACKEND_URL = (import.meta.env.VITE_API_URL as string) || 'https://dental-ai-backend-55pq.onrender.com/api';
+const USE_MOCK = true; // always use localStorage mock — change to false for real backend
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface User {
