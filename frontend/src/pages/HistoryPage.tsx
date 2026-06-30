@@ -175,7 +175,7 @@ export const HistoryPage: React.FC = () => {
           <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-teal-500/60 via-blue-500/30 to-transparent" />
 
           <div className="space-y-6 pl-16">
-            {filteredRecords.map((rec, idx) => {
+            {filteredRecords.map((rec) => {
               const color = getSeverityColor(rec.prediction_result.severity || '', rec.prediction_result.label);
               const icon = getTypeIcon(rec.scan_type);
               return (
