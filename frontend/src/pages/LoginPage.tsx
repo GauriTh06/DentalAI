@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Activity, ShieldAlert } from 'lucide-react';
+import { Activity, ShieldAlert, KeyRound } from 'lucide-react';
+
+const DEMO_ACCOUNTS = [
+  { label: 'Patient', email: 'patient@dental.ai', password: 'patient123' },
+  { label: 'Dentist', email: 'dentist@dental.ai', password: 'dentist123' },
+  { label: 'Admin',   email: 'admin@dental.ai',   password: 'admin123'   },
+];
 
 export const LoginPage: React.FC = () => {
   const { login, register, isAuthenticated, user } = useAuth();
@@ -17,6 +23,11 @@ export const LoginPage: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const quickFill = (email: string, password: string) => {
+    setFormData(prev => ({ ...prev, email, password }));
+    setError(null);
+  };
 
   // Set tab based on URL search query
   useEffect(() => {
@@ -116,6 +127,29 @@ export const LoginPage: React.FC = () => {
           <div className="bg-rose-500/10 border border-rose-500/25 rounded-xl p-3.5 mb-5 flex gap-2.5 items-start text-xs text-rose-400">
             <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
             <span>{error}</span>
+          </div>
+        )}
+
+        {/* Demo Credentials Panel — only shown on Sign In tab */}
+        {!isRegistering && (
+          <div className="bg-slate-900/60 border border-slate-700/50 rounded-xl p-3.5 mb-4">
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <KeyRound className="h-3.5 w-3.5 text-amber-400" />
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Demo Accounts — click to fill</span>
+            </div>
+            <div className="flex gap-2">
+              {DEMO_ACCOUNTS.map(acc => (
+                <button
+                  key={acc.label}
+                  type="button"
+                  onClick={() => quickFill(acc.email, acc.password)}
+                  className="flex-1 text-center py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[10px] font-semibold text-slate-300 hover:text-white transition-colors"
+                >
+                  {acc.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-[9px] text-slate-500 mt-2 text-center">Works offline — no backend required</p>
           </div>
         )}
 
