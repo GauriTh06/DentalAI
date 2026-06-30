@@ -1,8 +1,7 @@
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.responses import Response
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from backend.app.config import settings
 from backend.app.database import connect_to_mongo, close_mongo_connection
@@ -10,10 +9,10 @@ from backend.app.routes import auth, predict, patient, admin, chat
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Connect to PostgreSQL on startup
+    # Connect to MongoDB on startup
     await connect_to_mongo()
     yield
-    # Close connection on shutdown
+    # Close MongoDB connection on shutdown
     await close_mongo_connection()
 
 app = FastAPI(
@@ -22,12 +21,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# ──────────────────────────────────────────────────────────────────────────────
-# CORS — allow_credentials MUST be False when allow_origins=["*"].
-# Using True + * is invalid per the CORS spec and causes Starlette to crash
-# OR browsers to block every response with "No Access-Control-Allow-Origin".
-# We use Bearer tokens in headers (not cookies) so credentials=False is fine.
-# ──────────────────────────────────────────────────────────────────────────────
+# Spec-compliant CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,7 +31,7 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-# Mount static uploads directory — guard against missing dir on fresh containers
+# Guard static uploads directory mount to prevent startup crashes on fresh containers
 try:
     settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     app.mount("/uploads", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="uploads")
