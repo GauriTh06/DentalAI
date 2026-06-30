@@ -3,6 +3,15 @@
   publish = "dist"
   command = "npm install && npm run build"
 
+[build.environment]
+  VITE_API_URL = "https://dental-ai-backend-55pq.onrender.com/api"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://dental-ai-backend-55pq.onrender.com/api/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
