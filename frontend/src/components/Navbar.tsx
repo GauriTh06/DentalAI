@@ -39,6 +39,7 @@ export const Navbar: React.FC = () => {
       {/* Desktop Navigation Links */}
       {isAuthenticated && (
         <div className="hidden md:flex items-center gap-2">
+          <Link to="/about" className={linkClass('/about')}>About</Link>
           {user?.role === 'patient' && (
             <>
               <Link to="/dashboard" className={linkClass('/dashboard')}>Patient Dashboard</Link>
@@ -78,6 +79,12 @@ export const Navbar: React.FC = () => {
           </div>
         ) : (
           <div className="flex items-center gap-3">
+            <Link
+              to="/about"
+              className={linkClass('/about')}
+            >
+              About
+            </Link>
             <Link 
               to="/login" 
               className="text-sm font-medium text-slate-300 hover:text-white transition-colors"

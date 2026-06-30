@@ -252,9 +252,10 @@ export const DiagnosePage: React.FC = () => {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Original Scan</span>
                   <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 aspect-video flex items-center justify-center">
                     <img 
-                      src={`http://localhost:8000/${result.image_url}`} 
+                      src={result.image_url?.startsWith('data:') ? result.image_url : `/${result.image_url}`} 
                       alt="Original diagnostic scan" 
                       className="max-h-full max-w-full object-contain"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }}
                     />
                   </div>
                 </div>
@@ -298,6 +299,37 @@ export const DiagnosePage: React.FC = () => {
                   <span className="text-sm font-bold text-white block capitalize">{result.prediction_result.severity || 'Mild'}</span>
                 </div>
               </div>
+
+              {/* AI Risk Summary Card */}
+              {(() => {
+                const conf = result.prediction_result.confidence;
+                const sev = (result.prediction_result.severity || '').toLowerCase();
+                const label = result.prediction_result.label.toLowerCase();
+                const isHighRisk = sev.includes('severe') || sev.includes('high') || label.includes('cancer') || label.includes('malign');
+                const isMedium = sev.includes('moderate') || sev.includes('mild') || conf > 70;
+                const riskColor = isHighRisk ? 'rose' : isMedium ? 'amber' : 'emerald';
+                const riskLabel = isHighRisk ? '🔴 High Risk' : isMedium ? '🟡 Moderate Risk' : '🟢 Low Risk';
+                const action = isHighRisk
+                  ? 'Seek specialist consultation within 48–72 hours. Do not delay treatment.'
+                  : isMedium
+                  ? 'Schedule a routine dental appointment within the next 2–4 weeks.'
+                  : 'Maintain current oral hygiene. Routine check-up in 6 months.';
+                return (
+                  <div className={`bg-${riskColor}-500/10 border border-${riskColor}-500/30 rounded-2xl p-4 space-y-2`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-widest text-slate-400">AI Risk Assessment</span>
+                      <span className={`text-xs font-bold text-${riskColor}-400 bg-${riskColor}-500/10 px-3 py-1 rounded-full border border-${riskColor}-500/30`}>{riskLabel}</span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      The model detected <strong className="text-white">{result.prediction_result.label}</strong> with <strong className="text-white">{conf}% confidence</strong>.
+                    </p>
+                    <div className={`flex items-start gap-2 bg-${riskColor}-500/5 rounded-xl p-3 mt-1`}>
+                      <span className="text-base shrink-0">{isHighRisk ? '⚠️' : isMedium ? '📋' : '✅'}</span>
+                      <span className="text-xs text-slate-300 leading-relaxed"><strong className={`text-${riskColor}-400`}>Recommended Action:</strong> {action}</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* AI Recommendations */}
               {result.prediction_result.recommendations.length > 0 && (

@@ -5,7 +5,7 @@ import type { Scan, HealthScore } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { CircularGauge } from '../components/CircularGauge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { PlusCircle, HelpCircle, Activity, Heart, ShieldCheck, ChevronRight } from 'lucide-react';
+import { PlusCircle, HelpCircle, Activity, Heart, ShieldCheck, ChevronRight, AlertTriangle } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
@@ -57,10 +57,38 @@ export const DashboardPage: React.FC = () => {
     );
   }
 
+  // Smart Alert: check if latest scan is high risk
+  const isHighRiskAlert = (() => {
+    if (!latestScan) return false;
+    const sev = (latestScan.prediction_result.severity || '').toLowerCase();
+    const label = latestScan.prediction_result.label.toLowerCase();
+    return sev.includes('severe') || sev.includes('high') || label.includes('cancer') || label.includes('malign');
+  })();
+
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-8 relative">
       {/* Decorative Blur */}
       <div className="absolute top-1/2 left-1/3 w-[300px] h-[300px] bg-medical-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* Smart Alert Banner */}
+      {isHighRiskAlert && (
+        <div className="relative overflow-hidden bg-rose-500/10 border border-rose-500/40 rounded-2xl p-4 flex items-start gap-4 animate-pulse-slow">
+          <div className="shrink-0 w-10 h-10 bg-rose-500/20 rounded-xl flex items-center justify-center">
+            <AlertTriangle className="h-5 w-5 text-rose-400" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-rose-300">⚠️ Urgent Clinical Alert</p>
+            <p className="text-xs text-rose-200/70 mt-0.5 leading-relaxed">
+              Your latest scan — <strong className="text-rose-300">{latestScan?.prediction_result.label}</strong> — has been flagged as <strong className="text-rose-300">high risk</strong>. Please consult a dental specialist immediately. Early intervention significantly improves outcomes.
+            </p>
+          </div>
+          <Link to="/history" className="shrink-0 bg-rose-500 hover:bg-rose-400 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors">
+            View Report
+          </Link>
+          {/* Animated pulse border */}
+          <div className="absolute inset-0 rounded-2xl border border-rose-500/20 animate-ping opacity-30 pointer-events-none" />
+        </div>
+      )}
 
       {/* Greeting Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
