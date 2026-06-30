@@ -9,7 +9,6 @@ import { DashboardPage } from './pages/DashboardPage';
 import { DiagnosePage } from './pages/DiagnosePage';
 import { HistoryPage } from './pages/HistoryPage';
 import { AdminDashboard } from './pages/AdminDashboard';
-import { AboutPage } from './pages/AboutPage';
 
 // Route Guard for logged in users
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({ 
@@ -48,7 +47,6 @@ const AppContent: React.FC = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/about" element={<AboutPage />} />
           
           {/* Patient Routes */}
           <Route 
