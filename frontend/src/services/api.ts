@@ -6,6 +6,34 @@ const getAuthHeaders = (): Record<string, string> => {
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 };
 
+// Safe JSON error parser — prevents crash when backend returns empty body
+// (e.g. 502/503 from Render free-tier cold starts)
+const safeJsonError = async (res: Response): Promise<any> => {
+  try {
+    const text = await res.text();
+    if (!text || text.trim() === '') return {};
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+};
+
+// Safe JSON success parser — prevents crash when backend returns truncated JSON body
+const safeJsonResponse = async <T>(res: Response, context: string): Promise<T> => {
+  try {
+    const text = await res.text();
+    if (!text || text.trim() === '') {
+      throw new Error(
+        `${context}: Server returned an empty response. The backend may still be waking up — please try again in a moment.`
+      );
+    }
+    return JSON.parse(text) as T;
+  } catch (e: any) {
+    if (e.message.startsWith(context)) throw e;
+    throw new Error(`${context}: The server response was incomplete. Please try again.`);
+  }
+};
+
 export interface User {
   _id: string;
   email: string;
@@ -54,10 +82,10 @@ export const api = {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Registration failed');
+      const err = await safeJsonError(res);
+      throw new Error(err.detail || `Registration failed (${res.status})`);
     }
-    return res.json();
+    return safeJsonResponse<User>(res, 'Registration failed');
   },
 
   async login(data: any): Promise<{ access_token: string; role: string; name: string }> {
@@ -71,10 +99,10 @@ export const api = {
       body: params,
     });
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Login failed');
+      const err = await safeJsonError(res);
+      throw new Error(err.detail || `Login failed (${res.status})`);
     }
-    return res.json();
+    return safeJsonResponse<{ access_token: string; role: string; name: string }>(res, 'Login failed');
   },
 
   async getMe(): Promise<User> {
@@ -82,7 +110,7 @@ export const api = {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to retrieve profile');
-    return res.json();
+    return safeJsonResponse<User>(res, 'Failed to retrieve profile');
   },
 
   // 2. Scan Upload & Prediction
@@ -96,10 +124,10 @@ export const api = {
       body: formData,
     });
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || 'Upload and diagnosis failed');
+      const err = await safeJsonError(res);
+      throw new Error(err.detail || `Upload and diagnosis failed (${res.status})`);
     }
-    return res.json();
+    return safeJsonResponse<Scan>(res, 'Diagnosis response failed');
   },
 
   // 3. Patient History & Trends
@@ -108,7 +136,7 @@ export const api = {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to load patient history');
-    return res.json();
+    return safeJsonResponse<Scan[]>(res, 'Failed to load patient history');
   },
 
   async getHealthTrend(): Promise<HealthScore[]> {
@@ -116,7 +144,7 @@ export const api = {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to load health trends');
-    return res.json();
+    return safeJsonResponse<HealthScore[]>(res, 'Failed to load health trends');
   },
 
   async downloadReport(scanId: string, notes?: string): Promise<Blob> {
@@ -143,7 +171,7 @@ export const api = {
       body: JSON.stringify({ message }),
     });
     if (!res.ok) throw new Error('Chat assistant error');
-    return res.json();
+    return safeJsonResponse<{ response: string; timestamp: string }>(res, 'Chat assistant error');
   },
 
   // 5. Admin Dashboard
@@ -152,7 +180,7 @@ export const api = {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to fetch admin stats');
-    return res.json();
+    return safeJsonResponse<any>(res, 'Failed to fetch admin stats');
   },
 
   async listAllUsers(): Promise<User[]> {
@@ -160,7 +188,7 @@ export const api = {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to list system users');
-    return res.json();
+    return safeJsonResponse<User[]>(res, 'Failed to list system users');
   },
 
   async listAllScans(): Promise<Scan[]> {
@@ -168,7 +196,7 @@ export const api = {
       headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to list system scans');
-    return res.json();
+    return safeJsonResponse<Scan[]>(res, 'Failed to list system scans');
   },
 
   async submitDentistReview(scanId: string, notes: string): Promise<Scan> {
@@ -181,6 +209,6 @@ export const api = {
       body: JSON.stringify({ dentist_notes: notes }),
     });
     if (!res.ok) throw new Error('Failed to submit clinical remarks');
-    return res.json();
+    return safeJsonResponse<Scan>(res, 'Failed to submit clinical remarks');
   },
 };

@@ -252,7 +252,7 @@ export const DiagnosePage: React.FC = () => {
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Original Scan</span>
                   <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 aspect-video flex items-center justify-center">
                     <img 
-                      src={`http://localhost:8000/${result.image_url}`} 
+                      src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://dental-ai-backend-55pq.onrender.com'}/${result.image_url}`} 
                       alt="Original diagnostic scan" 
                       className="max-h-full max-w-full object-contain"
                     />
