@@ -148,9 +148,20 @@ export const HistoryPage: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="h-16 w-16 bg-slate-950 rounded-xl overflow-hidden shrink-0 border border-slate-800 flex items-center justify-center">
                     <img 
-                      src={`http://localhost:8000/${rec.image_url}`} 
+                      src={`${import.meta.env.VITE_API_URL?.replace('/api', '') || 'https://dental-ai-backend-55pq.onrender.com'}/${rec.image_url}`}
                       alt="Thumbnail scan" 
                       className="max-h-full max-w-full object-contain"
+                      onError={(e) => {
+                        // Show a placeholder tooth icon if image fails to load
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        const parent = (e.target as HTMLImageElement).parentElement;
+                        if (parent && !parent.querySelector('.img-fallback')) {
+                          const fallback = document.createElement('span');
+                          fallback.className = 'img-fallback text-slate-600 text-2xl';
+                          fallback.textContent = '🦷';
+                          parent.appendChild(fallback);
+                        }
+                      }}
                     />
                   </div>
                   <div>
