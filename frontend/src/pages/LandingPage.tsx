@@ -178,7 +178,7 @@ export const LandingPage: React.FC = () => {
                   <Brain className="h-5 w-5 text-teal-400" />
                 </div>
                 <div>
-                  <span className="text-lg font-bold text-white block leading-tight">98.2%</span>
+                  <span className="text-lg font-bold text-white block leading-tight">92.68%</span>
                   <span className="text-[10px] text-slate-400">Clinical Accuracy</span>
                 </div>
               </div>
@@ -194,7 +194,7 @@ export const LandingPage: React.FC = () => {
         <RevealSection>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto p-6 rounded-2xl glass-panel text-center">
             {[
-              { value: '98.2%', label: 'Clinical Accuracy', icon: CheckCircle },
+              { value: '92.68%', label: 'Clinical Accuracy', icon: CheckCircle },
               { value: '< 3.5s', label: 'Diagnostic Speed', icon: Clock },
               { value: '3 Models', label: 'Deep Learning CNNs', icon: Brain },
               { value: 'XAI', label: 'Grad-CAM Heatmaps', icon: Sparkles },

@@ -44,12 +44,14 @@ export const Navbar: React.FC = () => {
               <Link to="/dashboard" className={linkClass('/dashboard')}>Patient Dashboard</Link>
               <Link to="/diagnose" className={linkClass('/diagnose')}>Upload & Diagnose</Link>
               <Link to="/history" className={linkClass('/history')}>My Scans</Link>
+              <Link to="/education" className={linkClass('/education')}>Disease Guide</Link>
             </>
           )}
           {(user?.role === 'admin' || user?.role === 'dentist') && (
             <>
               <Link to="/admin" className={linkClass('/admin')}>Clinical Dashboard</Link>
               <Link to="/history" className={linkClass('/history')}>All Patient Records</Link>
+              <Link to="/education" className={linkClass('/education')}>Disease Guide</Link>
             </>
           )}
         </div>
@@ -112,12 +114,14 @@ export const Navbar: React.FC = () => {
               <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className={linkClass('/dashboard')}>Patient Dashboard</Link>
               <Link to="/diagnose" onClick={() => setMobileMenuOpen(false)} className={linkClass('/diagnose')}>Upload & Diagnose</Link>
               <Link to="/history" onClick={() => setMobileMenuOpen(false)} className={linkClass('/history')}>My Scans</Link>
+              <Link to="/education" onClick={() => setMobileMenuOpen(false)} className={linkClass('/education')}>Disease Guide</Link>
             </>
           )}
           {(user?.role === 'admin' || user?.role === 'dentist') && (
             <>
               <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className={linkClass('/admin')}>Clinical Dashboard</Link>
               <Link to="/history" onClick={() => setMobileMenuOpen(false)} className={linkClass('/history')}>All Patient Records</Link>
+              <Link to="/education" onClick={() => setMobileMenuOpen(false)} className={linkClass('/education')}>Disease Guide</Link>
             </>
           )}
         </div>

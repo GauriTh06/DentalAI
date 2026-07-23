@@ -232,6 +232,29 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Row 3: Comprehensive Disease Guide Promotion Banner */}
+      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-teal-500/20 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-semibold">
+            <Activity className="h-3.5 w-3.5" /> Clinical Pathology Knowledge Base
+          </div>
+          <h3 className="text-xl font-bold text-white">
+            Learn About Caries, Orthodontic Malocclusion & Oral Cancer
+          </h3>
+          <p className="text-xs text-slate-400 max-w-2xl">
+            Understand the biological stages, AI model architecture (EfficientNet, ResNet, DenseNet), warning symptoms, 
+            and clinical prevention guidelines for each condition.
+          </p>
+        </div>
+
+        <Link
+          to="/education"
+          className="shrink-0 flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-teal-400 hover:text-teal-300 text-xs font-bold px-6 py-3.5 rounded-xl transition-all shadow-md group"
+        >
+          Explore Disease Guide <ChevronRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
     </div>
   );
 };
